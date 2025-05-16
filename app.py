@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # Название приложения
-st.title("Музыкальная оценка на тусовке")
+st.title("Ебать какое жюри")
 
 # Список треков
 tracks = [
@@ -44,7 +44,8 @@ if st.button("Посмотреть результаты"):
         for track_name in df['Трек'].unique():
             st.write(f"#### Трек: {track_name}")
             filtered_df = df[df['Трек'] == track_name][["Имя", "Средняя оценка"]]
-            st.dataframe(filtered_df)
+            # Убираем левую колонку с индексами
+            st.dataframe(filtered_df.reset_index(drop=True))
     except FileNotFoundError:
         st.warning("Нет данных для отображения.")
 
