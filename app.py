@@ -1,90 +1,80 @@
 import streamlit as st
 import pandas as pd
 
-# Стилизация через CSS
-st.markdown(
-    """
+# Темная тема оформления
+st.set_page_config(page_title='Музыкальная оценка', page_icon='🎵', layout='centered')
+st.markdown("""
     <style>
-    .slider {{
-        background-color: #222;
-        border-radius: 10px;
-        padding: 10px;
-        margin-bottom: 10px;
-    }}
-    .title {{
-        font-size: 30px;
-        color: #fff;
-        margin-bottom: 20px;
-    }}
-    .track-title {{
+    body {
+        background-color: #1e1e1e;
+        color: #ffffff;
+    }
+    .stTextInput, .stSelectbox, .stButton, .stSlider {
         background-color: #333;
-        padding: 15px;
-        border-radius: 10px;
-        color: #fff;
-        margin-bottom: 15px;
-    }}
-    .total-score {{
-        font-size: 60px;
-        font-weight: bold;
-        color: #fff;
+        color: #ffffff;
+        border-radius: 8px;
+    }
+    .stSlider > div > div {
+        height: 8px;
+        background-color: #6a0dad;
+    }
+    .stButton > button {
+        background-color: #6a0dad;
+        color: #ffffff;
+        border-radius: 12px;
+    }
+    .total-score {
+        font-size: 50px;
+        color: #ffd700;
         text-align: center;
-    }}
-    .track-info {{
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }}
-    .icon {{
-        font-size: 40px;
-        color: #fff;
-    }}
-    .button {{
-        background-color: #555;
-        color: #fff;
-        padding: 10px;
-        border-radius: 10px;
         margin-top: 20px;
-        text-align: center;
-        cursor: pointer;
-    }}
+    }
+    .result-table {
+        margin-top: 20px;
+        border-radius: 8px;
+    }
     </style>
-    """,
-    unsafe_allow_html=True
-)
+    """, unsafe_allow_html=True)
 
-# Заголовок приложения
-st.markdown('<div class="title">🎵 Музыкальная оценка на тусовке</div>', unsafe_allow_html=True)
+# Название приложения
+st.title("🎵 Музыкальная оценка на тусовке")
 
 # Ввод имени
 name = st.text_input("Введите имя:")
 
 # Список треков
 tracks = [
-    "Австралия - Милкшейкмэн", "Азербайджан - Солист Илюха в коже", "Бельгия - Красный Себастьян",
-    "Грузия - Шансон и белые флаги", "Ирландия - Песня про Лайку", "Кипр - Парень на строительных лесах",
-    "Сербия - Мужик с хвостом про Милу", "Словения - Про жену и рак", "Хорватия - Вунш-пунш",
-    "Чехия - Кис-кис", "Черногория - Костюм ватного диска", "Норвегия - Чувак в доспехах"
+    "Австралия - Милкшейкмэн", "Азербайджан - Солист Илюха в коже",
+    "Бельгия - Красный Себастьян", "Грузия - Шансон и белые флаги",
+    "Ирландия - Песня про Лайку", "Кипр - Парень на строительных лесах",
+    "Сербия - Мужик с хвостом про Милу", "Словения - Про жену и рак",
+    "Хорватия - Вунш-пунш", "Чехия - Кис-кис"
 ]
-
-# Выбор трека
 track = st.selectbox("Выберите трек:", tracks)
 
 # Критерии оценки
 criteria = ["Вокал", "Стилевость", "Костюмы", "Оформление сцены", "Харизма", "Номер", "Общее впечатление"]
 scores = {}
 
-# Слайдеры для оценок
 for criterion in criteria:
     score = st.slider(criterion, 1, 10, 5, key=criterion)
     scores[criterion] = score
 
-# Подсчет среднего балла
-average_score = sum(scores.values()) / len(scores)
-st.markdown(f'<div class="total-score">Итог: {round(average_score, 1)}</div>', unsafe_allow_html=True)
+# Подсчет средней оценки
+average_score = round(sum(scores.values()) / len(scores), 2)
+st.markdown(f'<div class="total-score">Средний балл: {average_score}</div>', unsafe_allow_html=True)
 
-# Сохранение результата
+# Сохранение данных в CSV
 if st.button("Сохранить оценку"):
-    result = {"Имя": name, "Трек": track, **scores, "Средняя оценка": round(average_score, 1)}
+    result = {"Имя": name, "Трек": track, **scores, "Средняя оценка": average_score}
     df = pd.DataFrame([result])
-    df.to_csv("results.csv", mode="a", header=False, index=False)
+    df.to_csv("music_scores.csv", mode='a', header=False, index=False)
     st.success("Оценка сохранена!")
+
+# Кнопка для просмотра всех результатов
+if st.button("Посмотреть результаты"):
+    try:
+        df = pd.read_csv("music_scores.csv", names=["Имя", "Трек"] + criteria + ["Средняя оценка"])
+        st.write(df)
+    except FileNotFoundError:
+        st.warning("Результаты пока не сохранены.")
