@@ -8,7 +8,7 @@ st.set_page_config(page_title='Музыкальная оценка', page_icon='
 st.markdown("""
     <style>
     body {
-        background-color: #121212;
+        background-color: #000000;
         color: #e0e0e0;
         font-family: 'Arial', sans-serif;
     }
@@ -16,10 +16,12 @@ st.markdown("""
         background-color: #1e1e1e;
         color: #e0e0e0;
         border-radius: 12px;
+        border: 1px solid #444;
     }
     .stSlider > div > div {
-        height: 10px;
+        height: 14px;
         background-color: #6a0dad;
+        border-radius: 8px;
     }
     .stButton > button {
         background-color: #6a0dad;
@@ -27,18 +29,20 @@ st.markdown("""
         border-radius: 12px;
     }
     .total-score {
-        font-size: 60px;
+        font-size: 70px;
         color: #ffd700;
         text-align: center;
         margin-top: 20px;
+        font-weight: bold;
     }
     .title {
-        font-size: 42px;
+        font-size: 50px;
         font-weight: bold;
         color: #ffd700;
+        margin-bottom: 20px;
     }
     .track-title {
-        font-size: 20px;
+        font-size: 22px;
         color: #b0b0b0;
         margin-bottom: 10px;
     }
