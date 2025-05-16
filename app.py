@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
+import os
 
 # Название приложения
-st.title("Музыкальная оценка на тусовке")
+st.title("Ебать какие жюри")
 
 # Список треков
 tracks = [
@@ -21,9 +22,9 @@ track = st.selectbox("Выберите трек:", tracks)
 criteria = ["Вокал", "Стилевость", "Костюмы", "Оформление сцены", "Харизма", "Номер", "Общее впечатление"]
 scores = [st.slider(crit, 1, 10, 5) for crit in criteria]
 
-# Отображение средней оценки внизу (без надписи "Средняя оценка")
+# Автоматический подсчет средней оценки
 average_score = round(sum(scores) / len(scores), 1)
-st.markdown(f"<h2 style='text-align: center; font-size: 50px;'>{average_score}</h2>", unsafe_allow_html=True)
+st.markdown(f"## {average_score}")
 
 # Кнопка "Сохранить оценку"
 if st.button("Сохранить оценку"):
@@ -36,12 +37,16 @@ if st.button("Сохранить оценку"):
 if st.button("Посмотреть результаты"):
     try:
         df = pd.read_csv("music_scores.csv", names=["Имя", "Трек"] + criteria + ["Средняя оценка"])
-        grouped = df.groupby("Трек")["Средняя оценка"].mean().round(1).reset_index()
-        
-        st.write("### Результаты по трекам:")
-        for track in grouped["Трек"].unique():
-            st.write(f"**{track}**")
-            filtered_df = df[df["Трек"] == track][["Имя", "Средняя оценка"]]
-            st.dataframe(filtered_df)
+        st.write("### Все оценки:")
+        results = df.groupby("Трек")["Средняя оценка"].mean().reset_index()
+        st.dataframe(results)
     except FileNotFoundError:
         st.warning("Нет данных для отображения.")
+
+# Кнопка "Обнулить результаты"
+if st.button("Обнулить результаты"):
+    if os.path.exists("music_scores.csv"):
+        os.remove("music_scores.csv")
+        st.success("Все результаты успешно обнулены!")
+    else:
+        st.warning("Файл с результатами не найден.")
