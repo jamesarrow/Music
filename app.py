@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # Название приложения
-st.title("Ебать какие жюри")
+st.title("Алко-Жюри")
 
 # Список треков
 tracks = [
@@ -38,8 +38,10 @@ if st.button("Посмотреть результаты"):
     try:
         df = pd.read_csv("music_scores.csv", names=["Имя", "Трек"] + criteria + ["Средняя оценка"])
         st.write("### Все оценки:")
-        results = df.groupby("Трек")["Средняя оценка"].mean().reset_index()
-        st.dataframe(results)
+        for track_name in df['Трек'].unique():
+            st.write(f"#### Трек: {track_name}")
+            filtered_df = df[df['Трек'] == track_name][["Имя", "Средняя оценка"]]
+            st.dataframe(filtered_df)
     except FileNotFoundError:
         st.warning("Нет данных для отображения.")
 
