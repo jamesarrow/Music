@@ -1,21 +1,24 @@
 import streamlit as st
 import pandas as pd
 
-# Темная тема оформления
+# Настройка страницы
 st.set_page_config(page_title='Музыкальная оценка', page_icon='🎵', layout='centered')
+
+# Темное оформление через CSS
 st.markdown("""
     <style>
     body {
-        background-color: #1e1e1e;
-        color: #ffffff;
+        background-color: #121212;
+        color: #e0e0e0;
+        font-family: 'Arial', sans-serif;
     }
     .stTextInput, .stSelectbox, .stButton, .stSlider {
-        background-color: #333;
-        color: #ffffff;
-        border-radius: 8px;
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+        border-radius: 12px;
     }
     .stSlider > div > div {
-        height: 8px;
+        height: 10px;
         background-color: #6a0dad;
     }
     .stButton > button {
@@ -24,20 +27,35 @@ st.markdown("""
         border-radius: 12px;
     }
     .total-score {
-        font-size: 50px;
+        font-size: 60px;
         color: #ffd700;
         text-align: center;
         margin-top: 20px;
     }
+    .title {
+        font-size: 42px;
+        font-weight: bold;
+        color: #ffd700;
+    }
+    .track-title {
+        font-size: 20px;
+        color: #b0b0b0;
+        margin-bottom: 10px;
+    }
     .result-table {
         margin-top: 20px;
         border-radius: 8px;
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+    }
+    .stMarkdown {
+        background-color: #1e1e1e;
     }
     </style>
     """, unsafe_allow_html=True)
 
 # Название приложения
-st.title("🎵 Музыкальная оценка на тусовке")
+st.markdown('<div class="title">🎵 Музыкальная оценка на тусовке</div>', unsafe_allow_html=True)
 
 # Ввод имени
 name = st.text_input("Введите имя:")
@@ -50,7 +68,8 @@ tracks = [
     "Сербия - Мужик с хвостом про Милу", "Словения - Про жену и рак",
     "Хорватия - Вунш-пунш", "Чехия - Кис-кис"
 ]
-track = st.selectbox("Выберите трек:", tracks)
+st.markdown('<div class="track-title">Выберите трек:</div>', unsafe_allow_html=True)
+track = st.selectbox("", tracks)
 
 # Критерии оценки
 criteria = ["Вокал", "Стилевость", "Костюмы", "Оформление сцены", "Харизма", "Номер", "Общее впечатление"]
@@ -75,6 +94,7 @@ if st.button("Сохранить оценку"):
 if st.button("Посмотреть результаты"):
     try:
         df = pd.read_csv("music_scores.csv", names=["Имя", "Трек"] + criteria + ["Средняя оценка"])
-        st.write(df)
+        st.markdown('<div class="track-title">Все оценки:</div>', unsafe_allow_html=True)
+        st.dataframe(df.style.set_properties(**{'background-color': '#1e1e1e', 'color': '#e0e0e0'}))
     except FileNotFoundError:
         st.warning("Результаты пока не сохранены.")
