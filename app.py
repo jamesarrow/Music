@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # Название приложения
-st.title("Алко-Жюри")
+st.title("Музыкальная оценка на тусовке")
 
 # Список треков
 tracks = [
@@ -24,19 +24,22 @@ scores = [st.slider(crit, 1, 10, 5) for crit in criteria]
 
 # Автоматический подсчет средней оценки
 average_score = round(sum(scores) / len(scores), 1)
-st.markdown(f"## {average_score}")
+st.markdown(f"## Средняя оценка: {average_score}")
 
 # Кнопка "Сохранить оценку"
 if st.button("Сохранить оценку"):
-    result = [name, track] + scores + [average_score]
-    df = pd.DataFrame([result], columns=["Имя", "Трек"] + criteria + ["Средняя оценка"])
-    df.to_csv("music_scores.csv", mode='a', header=False, index=False)
-    st.success(f"Оценка сохранена!")
+    if name:  # Проверяем, что имя введено
+        result = [name, track] + scores + [average_score]
+        df = pd.DataFrame([result], columns=["Имя", "Трек"] + criteria + ["Средняя оценка"])
+        df.to_csv("music_scores.csv", mode='a', header=not os.path.isfile("music_scores.csv"), index=False)
+        st.success(f"Оценка сохранена! Спасибо, {name}!")
+    else:
+        st.error("Введите имя перед сохранением!")
 
 # Кнопка "Посмотреть результаты"
 if st.button("Посмотреть результаты"):
     try:
-        df = pd.read_csv("music_scores.csv", names=["Имя", "Трек"] + criteria + ["Средняя оценка"])
+        df = pd.read_csv("music_scores.csv")
         st.write("### Все оценки:")
         for track_name in df['Трек'].unique():
             st.write(f"#### Трек: {track_name}")
