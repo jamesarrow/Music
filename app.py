@@ -1,68 +1,90 @@
 import streamlit as st
 import pandas as pd
 
-# Название приложения
+# Стилизация через CSS
 st.markdown(
     """
     <style>
-    .main {
-        background-color: #1c1c1c;
-        color: #ffffff;
-    }
-    .stSlider > div {
-        background-color: #2e2e2e;
-        border-radius: 5px;
-    }
-    .stSlider > div > div {
-        color: #ffffff;
-    }
-    .stNumberInput input {
-        background-color: #2e2e2e;
-        color: #ffffff;
-    }
-    .score-display {
-        font-size: 50px;
+    .slider {{
+        background-color: #222;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 10px;
+    }}
+    .title {{
+        font-size: 30px;
+        color: #fff;
+        margin-bottom: 20px;
+    }}
+    .track-title {{
+        background-color: #333;
+        padding: 15px;
+        border-radius: 10px;
+        color: #fff;
+        margin-bottom: 15px;
+    }}
+    .total-score {{
+        font-size: 60px;
         font-weight: bold;
-        color: #ff4b4b;
+        color: #fff;
         text-align: center;
-    }
-    .track-display {
-        font-size: 20px;
-        color: #a1a1a1;
+    }}
+    .track-info {{
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }}
+    .icon {{
+        font-size: 40px;
+        color: #fff;
+    }}
+    .button {{
+        background-color: #555;
+        color: #fff;
+        padding: 10px;
+        border-radius: 10px;
+        margin-top: 20px;
         text-align: center;
-    }
+        cursor: pointer;
+    }}
     </style>
     """,
     unsafe_allow_html=True
 )
 
-st.title("🎵 Музыкальная оценка на тусовке")
+# Заголовок приложения
+st.markdown('<div class="title">🎵 Музыкальная оценка на тусовке</div>', unsafe_allow_html=True)
 
+# Ввод имени
 name = st.text_input("Введите имя:")
 
-# Треки для выбора
+# Список треков
 tracks = [
-    "Австралия - Милкшейкмэн", "Азербайджан - Солист Илюха в коже",
-    "Бельгия - Красный Себастьян", "Грузия - Шансон и белые флаги",
-    "Ирландия - Песня про Лайку", "Кипр - Парень на строительных лесах",
-    "Сербия - Мужик с хвостом про Милу", "Словения - Про жену и рак",
-    "Хорватия - Вунш-пунш", "Чехия - Кис-кис"
+    "Австралия - Милкшейкмэн", "Азербайджан - Солист Илюха в коже", "Бельгия - Красный Себастьян",
+    "Грузия - Шансон и белые флаги", "Ирландия - Песня про Лайку", "Кипр - Парень на строительных лесах",
+    "Сербия - Мужик с хвостом про Милу", "Словения - Про жену и рак", "Хорватия - Вунш-пунш",
+    "Чехия - Кис-кис", "Черногория - Костюм ватного диска", "Норвегия - Чувак в доспехах"
 ]
+
+# Выбор трека
 track = st.selectbox("Выберите трек:", tracks)
 
 # Критерии оценки
 criteria = ["Вокал", "Стилевость", "Костюмы", "Оформление сцены", "Харизма", "Номер", "Общее впечатление"]
-scores = [st.slider(crit, 1, 10, 5, key=crit) for crit in criteria]
+scores = {}
 
-# Автоматический подсчет оценки
-average_score = round(sum(scores) / len(scores), 2)
+# Слайдеры для оценок
+for criterion in criteria:
+    score = st.slider(criterion, 1, 10, 5, key=criterion)
+    scores[criterion] = score
 
-# Отображение трека и средней оценки
-st.markdown(f"<div class='track-display'>Трек: {track}</div>", unsafe_allow_html=True)
-st.markdown(f"<div class='score-display'>Средний балл: {average_score}</div>", unsafe_allow_html=True)
+# Подсчет среднего балла
+average_score = sum(scores.values()) / len(scores)
+st.markdown(f'<div class="total-score">Итог: {round(average_score, 1)}</div>', unsafe_allow_html=True)
 
-# Сохранение данных
-if name:
-    df = pd.DataFrame([[name, track, average_score]], columns=["Name", "Track", "Average Score"])
-    df.to_csv("music_scores.csv", mode='a', header=False, index=False)
+# Сохранение результата
+if st.button("Сохранить оценку"):
+    result = {"Имя": name, "Трек": track, **scores, "Средняя оценка": round(average_score, 1)}
+    df = pd.DataFrame([result])
+    df.to_csv("results.csv", mode="a", header=False, index=False)
     st.success("Оценка сохранена!")
