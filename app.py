@@ -61,9 +61,9 @@ if st.button("Топ 10 треков на основе всех оценок"):
 
 # Подтверждающее окно при нажатии на "Обнулить результаты"
 if st.button("Обнулить результаты"):
-    if st.confirm("Вы уверены, что хотите обнулить все результаты?"):
-        if os.path.exists("music_scores.csv"):
-            os.remove("music_scores.csv")
-            st.success("Результаты успешно обнулены!")
-        else:
+    if st.checkbox("Подтвердите обнуление данных"):
+        try:
+            open("music_scores.csv", "w").close()
+            st.success("Все результаты обнулены!")
+        except FileNotFoundError:
             st.warning("Нет данных для обнуления.")
