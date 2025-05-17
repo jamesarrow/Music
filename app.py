@@ -69,16 +69,9 @@ def reset_results():
     else:
         st.warning("Нет данных для обнуления.")
 
-# Использование сессии для состояния галочки
-if "reset_confirmed" not in st.session_state:
-    st.session_state.reset_confirmed = False
-
+# Галочка подтверждения рядом с кнопкой
 st.write("### Обнулить все результаты")
+confirm_reset = st.checkbox("Подтверждаю обнуление данных")
 
-# Галочка подтверждения
-st.session_state.reset_confirmed = st.checkbox("Подтверждаю обнуление данных", value=st.session_state.reset_confirmed)
-
-# Кнопка обнуления активна только при установленной галочке
-if st.button("Обнулить результаты") and st.session_state.reset_confirmed:
-    reset_results()
-    st.session_state.reset_confirmed = False
+# Кнопка "Обнулить результаты" активна только при установленной галочке
+st.button("Обнулить результаты", on_click=reset_results, disabled=not confirm_reset)
