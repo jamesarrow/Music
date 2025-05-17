@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # Название приложения
-st.title("Музыкальная оценка на тусовке")
+st.title("Ебать какое жюри")
 
 # Список треков
 tracks = [
