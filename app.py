@@ -43,11 +43,15 @@ if st.button("Посмотреть результаты"):
     except FileNotFoundError:
         st.warning("Нет данных для отображения.")
 
-# Кнопка "Обнулить результаты" с подтверждением
-if st.button("Обнулить результаты"):
-    if st.confirm("Вы уверены, что хотите обнулить все результаты?"):
-        if os.path.exists("music_scores.csv"):
-            os.remove("music_scores.csv")
-            st.success("Результаты успешно обнулены!")
-        else:
-            st.warning("Нет данных для обнуления.")
+# Подтверждающий чекбокс перед обнулением
+confirm_reset = st.checkbox("Подтверждаю обнуление результатов")
+
+# Кнопка "Обнулить результаты" активна только при подтверждении
+if st.button("Обнулить результаты") and confirm_reset:
+    if os.path.exists("music_scores.csv"):
+        os.remove("music_scores.csv")
+        st.success("Результаты успешно обнулены!")
+    else:
+        st.warning("Нет данных для обнуления.")
+elif st.button("Обнулить результаты"):
+    st.warning("Подтвердите обнуление, установив галочку.")
