@@ -31,12 +31,23 @@ scores = [st.slider(crit, 1, 10, 5) for crit in criteria]
 average_score = round(sum(scores) / len(scores), 1)
 st.markdown(f"### Итоговая оценка: {average_score}")
 
+# Проверка на дублирование оценки
+def is_duplicate(name, track):
+    if os.path.exists("music_scores.csv"):
+        df = pd.read_csv("music_scores.csv")
+        if not df[(df['Имя'] == name) & (df['Трек'] == track)].empty:
+            return True
+    return False
+
 # Кнопка "Сохранить оценку"
 if st.button("Сохранить оценку"):
-    result = [name, track] + scores + [average_score]
-    df = pd.DataFrame([result], columns=["Имя", "Трек"] + criteria + ["Средняя оценка"])
-    df.to_csv("music_scores.csv", mode='a', header=not os.path.isfile("music_scores.csv"), index=False)
-    st.success(f"Оценка сохранена!")
+    if is_duplicate(name, track):
+        st.warning(f"Оценка для трека '{track}' от '{name}' уже существует!")
+    else:
+        result = [name, track] + scores + [average_score]
+        df = pd.DataFrame([result], columns=["Имя", "Трек"] + criteria + ["Средняя оценка"])
+        df.to_csv("music_scores.csv", mode='a', header=not os.path.isfile("music_scores.csv"), index=False)
+        st.success(f"Оценка сохранена!")
 
 # Кнопка "Посмотреть результаты"
 if st.button("Посмотреть результаты"):
