@@ -69,10 +69,15 @@ def reset_results():
     else:
         st.warning("Нет данных для обнуления.")
 
-# Кнопка "Обнулить результаты" с галочкой подтверждения
+# Обнуление данных с подтверждением
 st.write("### Обнулить все результаты")
-confirm_reset = st.checkbox("Подтверждаю обнуление данных")
-if st.button("Обнулить результаты") and confirm_reset:
-    reset_results()
-elif st.button("Обнулить результаты"):
-    st.warning("Поставьте галочку для подтверждения обнуления.")
+if "reset_confirmed" not in st.session_state:
+    st.session_state.reset_confirmed = False
+
+if not st.session_state.reset_confirmed:
+    if st.button("Подтвердить обнуление данных"):
+        st.session_state.reset_confirmed = True
+else:
+    if st.button("Обнулить результаты"):
+        reset_results()
+        st.session_state.reset_confirmed = False
