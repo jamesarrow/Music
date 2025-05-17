@@ -42,28 +42,37 @@ if st.button("Сохранить оценку"):
 if st.button("Посмотреть результаты"):
     try:
         df = pd.read_csv("music_scores.csv")
+        st.write("### Все оценки:")
         for trk in df['Трек'].unique():
-            st.write(f"### Трек: {trk}")
-            st.dataframe(df[df['Трек'] == trk][["Имя", "Средняя оценка"]])
+            st.write(f"#### Трек: {trk}")
+            filtered_df = df[df['Трек'] == trk][["Имя", "Средняя оценка"]]
+            st.dataframe(filtered_df.reset_index(drop=True))
     except FileNotFoundError:
         st.warning("Нет данных для отображения.")
 
-# Кнопка "Топ 10 треков"
+# Кнопка "Топ 10 треков на основе всех оценок"
 if st.button("Топ 10 треков на основе всех оценок"):
     try:
         df = pd.read_csv("music_scores.csv")
         track_scores = df.groupby("Трек")["Средняя оценка"].sum().reset_index()
         top_tracks = track_scores.sort_values("Средняя оценка", ascending=False).head(10)
         st.write("### Топ 10 треков по сумме всех оценок:")
-        st.dataframe(top_tracks)
+        st.dataframe(top_tracks.reset_index(drop=True))
     except FileNotFoundError:
         st.warning("Нет данных для отображения.")
 
-# Подтверждающее окно при нажатии на "Обнулить результаты"
-if st.button("Обнулить результаты"):
-    if st.checkbox("Подтвердите обнуление данных"):
-        try:
-            open("music_scores.csv", "w").close()
-            st.success("Все результаты обнулены!")
-        except FileNotFoundError:
-            st.warning("Нет данных для обнуления.")
+# Функция для обнуления данных
+def reset_results():
+    if os.path.exists("music_scores.csv"):
+        os.remove("music_scores.csv")
+        st.success("Все результаты успешно обнулены!")
+    else:
+        st.warning("Нет данных для обнуления.")
+
+# Кнопка "Обнулить результаты" с галочкой подтверждения
+st.write("### Обнулить все результаты")
+confirm_reset = st.checkbox("Подтверждаю обнуление данных")
+if st.button("Обнулить результаты") and confirm_reset:
+    reset_results()
+elif st.button("Обнулить результаты"):
+    st.warning("Поставьте галочку для подтверждения обнуления.")
