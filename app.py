@@ -61,6 +61,21 @@ if st.button("Топ 10 треков на основе всех оценок"):
     except FileNotFoundError:
         st.warning("Нет данных для отображения.")
 
+# Кнопка "Топ 10 треков участника"
+if st.button("Топ 10 треков участника"):
+    try:
+        df = pd.read_csv("music_scores.csv")
+        names = df['Имя'].unique().tolist()
+        selected_name = st.selectbox("Выберите участника:", names)
+        
+        if selected_name:
+            user_tracks = df[df['Имя'] == selected_name][["Трек", "Средняя оценка"]]
+            top_user_tracks = user_tracks.sort_values("Средняя оценка", ascending=False).head(10)
+            st.write(f"### Топ 10 треков участника {selected_name}:")
+            st.dataframe(top_user_tracks.reset_index(drop=True))
+    except FileNotFoundError:
+        st.warning("Нет данных для отображения.")
+
 # Функция для обнуления данных
 def reset_results():
     if os.path.exists("music_scores.csv"):
